@@ -4,7 +4,7 @@
 // | @author_url	: https://logad.net
 // | @author_email	: henttech@gmail.com   
 // +------------------------------------------------------------------------+
-// | Last Updated : 31st May 2020
+// | Last Updated : 16th Sep 2020
 // +------------------------------------------------------------------------+
 
 ## Useful Custom PHP functions ##
@@ -135,4 +135,61 @@ function hide_email($email)
   return '<span id="'.$id.'">[javascript protected email address]</span>'.$script;
 
 }
+
+// Convert normal array to object array
+function convert_to_object($array){
+        $object = (object) $array;
+        return $object;
+}
+
+
+// Detect xhr / Allow only xhr (XmlHttpRequest)
+function onlyxhr(){
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
+                // not xhr //
+                // http_response_code(404);
+                // exit;
+            }
+        } 
+        else {
+            // not xhr //
+            // http_response_code(404);
+            / exit;
+        }
+}
+
+// Log error / messages to cutom file
+function log_error($message){
+        $message = "[".gmdate("M d Y H:i:s")."] \r\n".$message."\r\n";
+        error_log(PHP_EOL.$message,3,'./api_errors.log');       
+}
+
+// Get URL contents using curl (with file_get_contents fallback)
+function get_content($url){
+	if (function_exists('curl_version')) {
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $url,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_SSL_VERIFYPEER => false
+                ));
+                // curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                $result = curl_exec($curl);
+                curl_close($curl);
+        }
+        else{
+                $arrContextOptions=array(
+                    "ssl"=>array(
+                        "verify_peer"=>false,
+                        "verify_peer_name"=>false,
+                    ),
+                );
+                $result = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        }
+        return $result;
+}
+
+
 //More to come :D
