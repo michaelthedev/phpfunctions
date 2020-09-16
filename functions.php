@@ -192,4 +192,9 @@ function get_content($url){
 }
 
 
+// Auto highlight PHP code
+/* I just found out PHP has this awesome feature : highlight_string(str). It's useful in code documentations */
+function hightlight($string){
+	return highlight_string($string);
+}
 //More to come :D
