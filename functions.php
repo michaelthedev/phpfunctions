@@ -40,7 +40,7 @@ function GenerateString($minlength = 20, $maxlength = 20, $uselower = true, $use
 //Pretty Time (1min ago)
 function nicetime($date,$timezone="Africa/Lagos") {
         // Validate
-        if( !isset($date) && !strtotime($date) ) {
+        if( empty($date) || !strtotime($date) ) {
             return "Improper Parameter.";
         } else {
 
