@@ -240,4 +240,64 @@ function setToken($length){
 	// $token = bin2hex(openssl_random_pseudo_bytes($length));
 	return $token;
 }
+
+## Create slug from string ##
+function create_slug($text){
+  // replace non letter or digits by -
+  $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+
+  // transliterate
+  $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+  // remove unwanted characters
+  $text = preg_replace('~[^-\w]+~', '', $text);
+
+  // trim
+  $text = trim($text, '-');
+
+  // remove duplicate -
+  $text = preg_replace('~-+~', '-', $text);
+
+  // lowercase
+  $text = strtolower($text);
+
+  if (empty($text)) {
+	return 'n-a';
+  }
+
+  return $text;
+}
+
+## Get details of a youtube video (if you have apiKey) ##
+function get_youtube($url){
+	preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
+	$youtube_id = $match[1];
+
+	$apikey = "YOUR API KEY HERE";
+
+	$youtube = "https://www.googleapis.com/youtube/v3/videos?key=$apikey&part=snippet&id=$youtube_id";
+
+	 $curl = curl_init($youtube);
+	 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	 $return = curl_exec($curl);
+	 curl_close($curl);
+	 return json_decode($return);
+}
+
+## Get details of a youtube video (if you dont have an apikey)
+function get_youtube_alt($url){
+    $youtube = "https://www.youtube.com/oembed?url=". $url ."&format=json";
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $youtube,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false
+    ));
+    $return = curl_exec($curl);
+    curl_close($curl);
+    return json_decode($return, true);
+}
+
 //More to come :D
