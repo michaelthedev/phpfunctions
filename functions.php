@@ -4,7 +4,7 @@
 // | @author_url	: https://logad.net
 // | @author_email	: henttech@gmail.com   
 // +------------------------------------------------------------------------+
-// | Last Updated : 16th Sep 2020
+// | Last Updated : 25th Mar 2021
 // +------------------------------------------------------------------------+
 
 ## Useful Custom PHP functions ##
@@ -196,5 +196,48 @@ function get_content($url){
 /* I just found out PHP has this awesome feature : highlight_string(str). It's useful in code documentations */
 function hightlight($string){
 	return highlight_string($string);
+}
+
+## Revers Geocoding ##
+/* Convert longitude and latitude to addresses */
+function geo_code($lat, $long){
+	$url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=".$lat."&lon=".$long."&zoom=18&addressdetails=1";
+	$ch = curl_init();
+
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+	curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+
+	$headers = array();
+	$headers[] = 'Authority: nominatim.openstreetmap.org';
+	$headers[] = 'Cache-Control: max-age=0';
+	$headers[] = 'Dnt: 1';
+	$headers[] = 'Upgrade-Insecure-Requests: 1';
+	$headers[] = 'User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 OPR/68.0.3618.173';
+	$headers[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9';
+	$headers[] = 'Sec-Fetch-Site: none';
+	$headers[] = 'Sec-Fetch-Mode: navigate';
+	$headers[] = 'Sec-Fetch-User: ?1';
+	$headers[] = 'Sec-Fetch-Dest: document';
+	$headers[] = 'Accept-Language: en-US,en;q=0.9';
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+	$result = curl_exec($ch);
+	if (curl_errno($ch)) {
+	    echo 'Error:' . curl_error($ch);
+	}
+	curl_close ($ch);
+	return $result;
+}
+
+## Generate Token ##
+function setToken($length){
+	$token = bin2hex(random_bytes($length));
+	// If you get an error concerning the above, 
+	// comment the above line and uncomment the next line.
+	// $token = bin2hex(openssl_random_pseudo_bytes($length));
+	return $token;
 }
 //More to come :D
