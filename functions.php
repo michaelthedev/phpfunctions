@@ -300,4 +300,82 @@ function get_youtube_alt($url){
     return json_decode($return, true);
 }
 
+
+// Rearrange HTML multiple upload files
+// Gotten from : https://www.php.net/manual/en/features.file-upload.multiple.php#53240
+function reArrayFiles(&$file_post) {
+    $file_ary = array();
+    $file_count = count($file_post['name']);
+    $file_keys = array_keys($file_post);
+    for ($i=0; $i<$file_count; $i++) {
+	foreach ($file_keys as $key) {
+	    $file_ary[$i][$key] = $file_post[$key][$i];
+	}
+    }
+    return $file_ary;
+}
+
+
+// Upload Document and automatically create folders based on current year / month
+## Upload Document Handler ##
+private function upload_document($file){
+	// Default funtion returns
+	$response['status'] = false;
+	$response['msg'] = "Some error occurred while uploading the document";
+
+	// Check upload status
+	if ($file['error'] != UPLOAD_ERR_OK){
+		$response['msg'] = "File upload failed. Please check the file";
+		return $response;
+	}
+
+	// Upload Folder
+	$folder = "../../uploads/documents/".date("Y")."/".date("m")."/";
+	if (!is_dir($folder)) mkdir($folder, 0777, true);
+
+	// Check file size
+	if ($file["size"] > 5000000) {
+		$response['msg'] = "Sorry, your file is too large.";
+		return $response;
+	}
+
+	$temporaryName = $file['tmp_name'];
+	$original_name = basename($file['name']);
+
+	// Check File mime
+	$mime_type = $file['type'];
+	$allowed_types = array('application/pdf','application/msword','text/plain','image/png','image/jpeg','image/jpg');
+	if (!in_array($mime_type, $allowed_types)) {
+		$response['msg'] = "File type is not allowed";
+		return $response;
+	}
+
+	$extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+	// Check Extension
+	if ($extension != "pdf" && $extension != "doc" && $extension != "docx" && $extension != "png" && $extension != "jpg" && $extension != "jpeg" && $extension != "txt") {
+		$response['msg'] = "Only pdf, doc, docx, png, jpg, jpeg, txt files are allowed!";
+		return $response;
+	}
+
+	// $file_name = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM)).".".$extension;
+	$file_name = 'file_'.date('Y-m-d').'_'.time().'_'.uniqid().".".$extension;
+	if (move_uploaded_file($temporaryName, $folder.$file_name) === true){
+		// Use this only if your $folder has "../" in it
+		$path = str_replace("../", null, $folder.$file_name);
+		$date = time();
+
+		// Store record in database
+		// $stmt = $this->con->prepare("INSERT INTO uploads (name, original_name, path, mime_type, date) VALUES (?,?,?,?,?)");
+		// $stmt->bind_param("ssssi", $file_name, $original_name, $folder, $mime_type, $date);
+		// $stmt->execute();
+		// if ($stmt->affected_rows == 1) {
+			$response['status'] = true;
+			$response['msg'] = "File Uploaded";
+			$response['path'] = $path;
+		 // }
+	}
+
+	return $response;
+}
 //More to come :D
