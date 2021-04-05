@@ -4,7 +4,7 @@
 // | @author_url	: https://logad.net
 // | @author_email	: henttech@gmail.com   
 // +------------------------------------------------------------------------+
-// | Last Updated : 25th Mar 2021
+// | Last Updated : 5th Apr 2021
 // +------------------------------------------------------------------------+
 
 ## Useful Custom PHP functions ##
