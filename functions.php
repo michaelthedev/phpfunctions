@@ -318,7 +318,7 @@ function reArrayFiles(&$file_post) {
 
 // Upload Document and automatically create folders based on current year / month
 ## Upload Document Handler ##
-private function upload_document($file){
+function upload_document($file){
 	// Default funtion returns
 	$response['status'] = false;
 	$response['msg'] = "Some error occurred while uploading the document";
