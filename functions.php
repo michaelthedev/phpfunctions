@@ -378,4 +378,41 @@ function upload_document($file){
 
 	return $response;
 }
+
+// Automatically sanitize POST data and check for empty values
+// Uses the clean() function in this file
+// COPY THE CODE OUT OF THE FUNCTION !!
+/* Usage :
+// echo $post->email; // or
+// echo $post['email'];
+// echo $errors;
+*/
+function check_post() {
+	$errors = "";
+	// Create a new stdclass
+	$post = new stdClass();
+	foreach ($_POST as $key => $value) {
+		if(empty($value)){
+			$errors .= $key." is required\n";
+		}
+		else{
+			$post->$key = clean($value);
+		}
+	}
+	// If you want it as an array instead of an object
+	// $post = (array) $post;
+	return $post;
+}
+
+
+// Add (th, st, nd, rd, th) to the end of a number
+// (https://catswhocode.com/php-sanitize-input/)
+function ordinal($cdnl){ 
+    $test_c = abs($cdnl) % 10; 
+    $ext = ((abs($cdnl) %100 < 21 && abs($cdnl) %100 > 4) ? 'th' 
+            : (($test_c < 4) ? ($test_c < 3) ? ($test_c < 2) ? ($test_c < 1) 
+            ? 'th' : 'st' : 'nd' : 'rd' : 'th')); 
+    return $cdnl.$ext; 
+}
+
 //More to come :D
