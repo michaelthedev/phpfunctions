@@ -415,4 +415,16 @@ function ordinal($cdnl){
     return $cdnl.$ext; 
 }
 
+
+## Exchange rates for USD ##
+// $rate_amount = exchange_rate(5000, "usd");
+public function exchange_rate($amount, $currency, $rate = 400) {
+	if (strtolower($currency) == "usd") {
+		$rate_amount = ($amount*1) / $rate;
+	}
+	if (strtolower($currency) == "ngn") {
+		$rate_amount = ($amount * $rate);
+	}
+	return $rate_amount;
+}
 //More to come :D
